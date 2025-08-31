@@ -1,0 +1,236 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+networks:
+    net:
+        name: net
+        driver: bridge
+
+services:
+    wewall-tg-bot-db:
+        image: postgres:latest
+        container_name: "${WEWALL_TG_BOT_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_TG_BOT_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_TG_BOT_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_TG_BOT_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_TG_BOT_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_TG_BOT_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-chat-db:
+        image: postgres:latest
+        container_name: "${WEWALL_CHAT_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_CHAT_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_CHAT_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_CHAT_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_CHAT_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_CHAT_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-calculator-db:
+        image: postgres:latest
+        container_name: "${WEWALL_ESTATE_CALCULATOR_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_ESTATE_CALCULATOR_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_ESTATE_CALCULATOR_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_ESTATE_CALCULATOR_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_ESTATE_CALCULATOR_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_ESTATE_CALCULATOR_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-expert-db:
+        image: postgres:latest
+        container_name: "${WEWALL_ESTATE_EXPERT_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_ESTATE_EXPERT_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_ESTATE_EXPERT_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_ESTATE_EXPERT_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_ESTATE_EXPERT_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_ESTATE_EXPERT_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-search-db:
+        image: postgres:latest
+        container_name: "${WEWALL_ESTATE_SEARCH_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_ESTATE_SEARCH_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_ESTATE_SEARCH_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_ESTATE_SEARCH_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_ESTATE_SEARCH_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_ESTATE_SEARCH_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-admin-tg-bot-db:
+        image: postgres:latest
+        container_name: "${WEWALL_ADMIN_TG_BOT_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_ADMIN_TG_BOT_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_ADMIN_TG_BOT_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_ADMIN_TG_BOT_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_ADMIN_TG_BOT_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_ADMIN_TG_BOT_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-grafana-postgres:
+        image: postgres:latest
+        container_name: "${WEWALL_GRAFANA_POSTGRES_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_GRAFANA_POSTGRES_VOLUME_DIR}:/var/lib/postgresql/data"
+        ports:
+            - "${WEWALL_GRAFANA_POSTGRES_PORT}:5432"
+        environment:
+            POSTGRES_DB: "${WEWALL_GRAFANA_POSTGRES_DB_NAME}"
+            POSTGRES_USER: "${WEWALL_GRAFANA_POSTGRES_USER}"
+            POSTGRES_PASSWORD: "${WEWALL_GRAFANA_POSTGRES_PASSWORD}"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-monitoring-redis:
+        image: redis:8.0.2
+        container_name: "${WEWALL_MONITORING_REDIS_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_MONITORING_REDIS_CONFIG_FILE}:/etc/redis/redis.conf"
+            - "../${WEWALL_MONITORING_REDIS_VOLUME_DIR}:/data"
+        ports:
+            - "${WEWALL_MONITORING_REDIS_PORT}:6379"
+        command: "redis-server /etc/redis/redis.conf"
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-loki:
+        image: grafana/loki:3.5.1
+        container_name: "${WEWALL_LOKI_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_LOKI_CONFIG_FILE}:/etc/loki/loki.yaml:ro"
+            - "../${WEWALL_LOKI_VOLUME_DIR}:/loki"
+        ports:
+            - "${WEWALL_LOKI_HTTP_PORT}:${WEWALL_LOKI_HTTP_PORT}"
+            - "${WEWALL_LOKI_GRPC_PORT}:${WEWALL_LOKI_GRPC_PORT}"
+        command: [ "-config.file=/etc/loki/loki.yaml" ]
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-tempo:
+        image: grafana/tempo:2.7.2
+        container_name: "${WEWALL_TEMPO_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_TEMPO_CONFIG_FILE}:/etc/tempo/tempo.yaml:ro"
+            - "../${WEWALL_TEMPO_VOLUME_DIR}:/var/tempo"
+        ports:
+            - "${WEWALL_TEMPO_HTTP_PORT}:${WEWALL_TEMPO_HTTP_PORT}"
+            - "${WEWALL_TEMPO_GRPC_PORT}:${WEWALL_TEMPO_GRPC_PORT}"
+            - "${WEWALL_TEMPO_OTLP_HTTP_PORT}:${WEWALL_TEMPO_OTLP_HTTP_PORT}"
+            - "${WEWALL_TEMPO_OTLP_GRPC_PORT}:${WEWALL_TEMPO_OTLP_GRPC_PORT}"
+        command: [ "-config.file=/etc/tempo/tempo.yaml" ]
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-victoria-metrics:
+        image: victoriametrics/victoria-metrics:v1.118.0
+        container_name: "${WEWALL_VICTORIA_METRICS_CONTAINER_NAME}"
+        volumes:
+            - "../${WEWALL_VICTORIA_METRICS_VOLUME_DIR}:/victoria-metrics-data"
+        ports:
+            - "${WEWALL_VICTORIA_METRICS_HTTP_PORT}:${WEWALL_VICTORIA_METRICS_HTTP_PORT}"
+        command:
+            - '-storageDataPath=/victoria-metrics-data'
+            - '-retentionPeriod=30d'
+            - '-httpListenAddr=:8428'
+            - '-memory.allowedPercent=80'
+            - '-search.maxUniqueTimeseries=1000000'
+            - '-search.maxQueryDuration=120s'
+        logging: *default-logging
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-weed-master:
+        image: chrislusf/seaweedfs
+        logging: *default-logging
+        container_name: wewall-weed-master
+        ports:
+            - "${WEWALL_WEED_MASTER_PORT}:${WEWALL_WEED_MASTER_PORT}"
+        command: "master"
+        networks:
+            - net
+
+    wewall-weed-volume:
+        image: chrislusf/seaweedfs:latest
+        container_name: wewall-weed-volume
+        command: >
+            volume 
+            -mserver="${WEWALL_WEED_MASTER_CONTAINER_NAME}:${WEWALL_WEED_MASTER_PORT}" 
+            -ip.bind=0.0.0.0 
+            -port=8080 
+            -dir="/data"
+            -max=10
+            -metricsPort=9325
+            -dataCenter=dc1
+            -rack=rack2
+        volumes:
+            - "../${WEWALL_WEED_VOLUME_DIR}:/data"
+        depends_on:
+            - wewall-weed-master
+        networks:
+            - net
+        restart: unless-stopped
+        logging: *default-logging
+
+    wewall-weed-filer:
+            image: chrislusf/seaweedfs:latest
+            container_name: wewall-weed-filer
+            command: >
+                filer 
+                -master="${WEWALL_WEED_MASTER_CONTAINER_NAME}:${WEWALL_WEED_MASTER_PORT}"
+                -ip.bind=0.0.0.0 
+                -metricsPort=9327
+            depends_on:
+                - wewall-weed-master
+                - wewall-weed-volume
+            networks:
+                - net
+            restart: unless-stopped
+            logging: *default-logging

@@ -1,0 +1,10 @@
+FROM python:3.12-bullseye
+
+WORKDIR /root
+COPY .. .
+
+
+RUN apt-get update && apt-get install -y wkhtmltopdf
+RUN cd .github && pip install -r requirements.txt
+
+CMD python3 main.py http

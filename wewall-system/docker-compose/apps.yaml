@@ -1,0 +1,101 @@
+networks:
+    net:
+        name: net
+        external: true  # Создается в docker-compose.db.yaml
+
+services:
+    wewall-tg-bot:
+        build:
+            context: "../../${WEWALL_TG_BOT_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/docker/DockerfileHTTP"
+        container_name: "${WEWALL_TG_BOT_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_TG_BOT_PORT}:${WEWALL_TG_BOT_PORT}"
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-chat:
+        build:
+            context: "../../${WEWALL_CHAT_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/Dockerfile"
+        container_name: "${WEWALL_CHAT_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_CHAT_PORT}:${WEWALL_CHAT_PORT}"
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-calculator:
+        build:
+            context: "../../${WEWALL_ESTATE_CALCULATOR_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/Dockerfile"
+        container_name: "${WEWALL_ESTATE_CALCULATOR_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_ESTATE_CALCULATOR_PORT}:${WEWALL_ESTATE_CALCULATOR_PORT}"
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-expert:
+        build:
+            context: "../../${WEWALL_ESTATE_EXPERT_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/docker/DockerfileHTTP"
+        container_name: "${WEWALL_ESTATE_EXPERT_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_ESTATE_EXPERT_PORT}:${WEWALL_ESTATE_EXPERT_PORT}"
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-estate-search:
+        build:
+            context: "../../${WEWALL_ESTATE_SEARCH_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/docker/DockerfileHTTP"
+        container_name: "${WEWALL_ESTATE_SEARCH_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_ESTATE_SEARCH_PORT}:${WEWALL_ESTATE_SEARCH_PORT}"
+        restart: unless-stopped
+        networks:
+            - net
+
+    wewall-admin-tg-bot:
+        build:
+            context: "../../${WEWALL_ADMIN_TG_BOT_CONTAINER_NAME}"
+            dockerfile: "${WEWALL_MICROSERVICE_DOCKERFILE_DIR}/Dockerfile"
+        container_name: "${WEWALL_ADMIN_TG_BOT_CONTAINER_NAME}"
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        ports:
+            - "${WEWALL_ADMIN_TG_BOT_PORT}:${WEWALL_ADMIN_TG_BOT_PORT}"
+        restart: unless-stopped
+        networks:
+            - net

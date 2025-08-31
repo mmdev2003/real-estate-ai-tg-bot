@@ -1,0 +1,68 @@
+networks:
+    net:
+        name: net
+        external: true  # Создается в docker-compose.db.yaml
+
+services:
+    wewall-tg-bot-newsletter:
+        build:
+            context: "../../wewall-tg-bot"
+            dockerfile: ".github/docker/DockerfileNewsLetter"
+        container_name: wewall-tg-bot-newsletter
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        networks:
+            - net
+
+    wewall-estate-expert-tg-parsing:
+        build:
+            context: "../../wewall-estate-expert"
+            dockerfile: ".github/docker/DockerfileTgNewsParsing"
+        container_name: wewall-estate-expert-tg-parsing
+        networks:
+            - net
+
+    wewall-estate-expert-pdf-analysis:
+        build:
+            context: "../../wewall-estate-expert"
+            dockerfile: ".github/docker/DockerfilePdfAnalysis"
+        container_name: wewall-estate-expert-pdf-analysis
+        networks:
+            - net
+
+    wewall-estate-search-parsing-m2data:
+        build:
+            context: "../../wewall-estate-search"
+            dockerfile: ".github/docker/DockerfileParseM2Data"
+        container_name: wewall-estate-search-parsing
+        networks:
+            - net
+
+    wewall-estate-search-parsing-trend-agent:
+        build:
+            context: "../../wewall-estate-search"
+            dockerfile: ".github/docker/DockerfileParseTrendAgent"
+        container_name: wewall-estate-search-parsing
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        networks:
+            - net
+
+    wewall-estate-search-calc-sale-offer-irr:
+        build:
+            context: "../../wewall-estate-search"
+            dockerfile: ".github/docker/DockerfileCalcSaleOfferIrr"
+        container_name: wewall-estate-search-calc-sale-offer-irr
+        env_file:
+            - "../env/${ENVIRONMENT}/.env"
+            - "../env/${ENVIRONMENT}/.env.app"
+            - "../env/${ENVIRONMENT}/.env.db"
+            - "../env/${ENVIRONMENT}/.env.monitoring"
+        networks:
+            - net

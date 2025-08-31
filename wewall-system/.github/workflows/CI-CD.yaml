@@ -1,0 +1,24 @@
+name: CI/CD
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update production
+        env:
+            SERVER: 89.223.127.136
+            USER: root
+            PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          apt install sshpass -y
+          sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USER@$SERVER << EOF
+          cd wewall/wewall-system
+          git pull
+          EOF
